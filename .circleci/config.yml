@@ -16,6 +16,8 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "e8:1c:0d:55:b0:66:41:8c:52:de:81:2f:bc:af:20:53"
+      - get_cgreen: git clone git@github.com:cgreen-devs/cgreen.git
+      - build_cgreen: cd cgreen && make && make install
       - checkout
       - run: cd ./test && make && make test
       - slack/notify:
