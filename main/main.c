@@ -36,7 +36,7 @@
 #include <HL_system.h>
 
 #include "main/system.h"
-#include "main/version.h"
+//#include "main/version.h"
 #include "board_io_tests.h"
 #include "services.h"
 #include "subsystems_ids.h"
@@ -154,7 +154,7 @@ void ex2_init(void *pvParameters) {
 
 #ifdef FLATSAT_TEST
 void flatsat_test(void *pvParameters) {
-
+    binaryTest();
     vTaskDelete(NULL);
 }
 #endif
