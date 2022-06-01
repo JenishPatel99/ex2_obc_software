@@ -87,6 +87,13 @@ SECTIONS
     .kernelHEAP   : {} > RAM
     .bss          : {} > RAM
     .data         : {} > RAM    
+<<<<<<< HEAD
+=======
+    .sysmem       : {} > RAM
+    FEE_TEXT_SECTION align(32) : {} > FLASH0 | FLASH1
+    FEE_CONST_SECTION align(32): {} > FLASH0 | FLASH1
+    FEE_DATA_SECTION : {} > RAM
+>>>>>>> c187856... Re-develop iris i2c programming code with new protocol
 
 /* USER CODE BEGIN (4) */
  	.blinky_section :  RUN = SDRAM, LOAD = FLASH0 | FLASH1

@@ -19,6 +19,7 @@
  */
 
 #include "iris_bootloader_cmds.h"
+#include "common.h"
 #include "i2c_io.h"
 #include "HL_gio.h"
 #include "HL_reg_het.h"
@@ -55,13 +56,6 @@ void BOOT_LOW() {
     gioSetBit(hetPORT1, 14, 0);
 }
 
-/**
- * @brief
- *  Pull boot line high
- **/
-void BOOT_HIGH() {
-    gioSetBit(hetPORT1, 14, 1);
-}
 
 /**
  * @brief
@@ -243,6 +237,13 @@ int iris_check_bootloader_version(uint8_t *version) {
     /* Wait for ACK/NACK */
     iris_read_packet(&rx_data, 1);
 
+    /* End I2C transaction by doing end sequence*/
+    BOOT_LOW();
+    vTaskDelay(100);
+    POWER_OFF();
+    vTaskDelay(100);
+    POWER_ON();
+
     return ret;
 }
 
@@ -335,5 +336,14 @@ int iris_mass_erase_flash() {
     memset(packet, 0, MASS_ERASE_PACKET_LENGTH);
 
     return ret;
+}
+
+int iris_mass_erase_flash() {
+    int ret = 0;
+
+    for (int page_num = 0; page_num < 512; page_num++) {
+        iris_erase_page(page_num);
+        // TODO: Verify return
+    }
 }
 

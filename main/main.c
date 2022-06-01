@@ -67,9 +67,13 @@
 #include "test_sdr.h"
 #include <csp/interfaces/csp_if_sdr.h>
 #include "printf.h"
+<<<<<<< HEAD
 #include "csp/crypto/csp_hmac.h"
 #include "crypto.h"
 #include "csp_debug_wrapper.h"
+=======
+#include "iris_bootloader_cmds.h"
+>>>>>>> c187856... Re-develop iris i2c programming code with new protocol
 
 #define SDR_TEST 0
 
@@ -202,12 +206,27 @@ void ex2_init(void *pvParameters) {
 void flatsat_test(void *pvParameters) { vTaskDelete(NULL); }
 #endif
 
+void iris_i2c_test(void *pvParameters) {
+    iris_i2c_init();
+    uint32_t flash_addr = 0x08000000;
+    uint8_t num_bytes = 0x10;
+    int i = 0;
+
+    for (;;) {
+        //iris_write_page(flash_addr);
+        iris_erase_page(2);
+        //gio_test();
+    }
+}
+
+
 int ex2_main(void) {
     _enable_IRQ_interrupt_(); // enable inturrupts
     InitIO();
     for (int i = 0; i < 1000000; i++)
         ;
     xTaskCreate(ex2_init, "init", INIT_STACK_SIZE, NULL, INIT_PRIO, NULL);
+    xTaskCreate(iris_i2c_test, "iris_test", INIT_STACK_SIZE, NULL, INIT_PRIO, NULL);
 
     /* Start FreeRTOS! */
     vTaskStartScheduler();
@@ -215,6 +234,8 @@ int ex2_main(void) {
     for (;;)
         ; // Scheduler didn't start
 }
+
+
 
 /**
  * Initialize service and system tasks
