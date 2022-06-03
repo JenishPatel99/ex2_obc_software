@@ -237,12 +237,7 @@ int iris_check_bootloader_version(uint8_t *version) {
     /* Wait for ACK/NACK */
     iris_read_packet(&rx_data, 1);
 
-    /* End I2C transaction by doing end sequence*/
-    BOOT_LOW();
-    vTaskDelay(100);
-    POWER_OFF();
-    vTaskDelay(100);
-    POWER_ON();
+    free(packet);
 
     return ret;
 }
