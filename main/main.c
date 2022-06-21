@@ -62,7 +62,6 @@
 #include "leop.h"
 #include "adcs.h"
 #include "iris.h"
-#include "iris_spi.h"
 
 #include "deployablescontrol.h"
 
@@ -164,10 +163,10 @@ void flatsat_test(void *pvParameters) {
 TaskHandle_t iris_spi_handle;
 
 void iris_spi_test(void * pvParameters) {
-    iris_spi_init();
+    iris_init();
     //iris_take_pic();
 
-    iris_housekeeping_data hk_data;
+    IRIS_Housekeeping hk_data;
     uint16_t image_count;
     uint32_t image_length;
 
