@@ -303,7 +303,7 @@ Iris_HAL_return iris_toggle_sensor_idle(IRIS_SENSOR_TOGGLE toggle) {
  * @return
  *   Returns a housekeeping data structure
  **/
-Iris_HAL_return iris_get_housekeeping(iris_housekeeping_data *hk_data) {
+Iris_HAL_return iris_get_housekeeping(IRIS_Housekeeping *hk_data) {
     IrisLowLevelReturn ret;
 
     controller_state = SEND_COMMAND;
