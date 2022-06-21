@@ -27,6 +27,13 @@
  * - Full error coverage is desired
  */
 
+/**
+ * @brief
+ *   Initialize low-level spi driver settings
+ **/
+void iris_init() {
+    iris_spi_init();
+}
 
 /**
  * @brief
