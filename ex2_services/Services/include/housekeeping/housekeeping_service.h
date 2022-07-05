@@ -77,7 +77,7 @@ typedef struct __attribute__((packed)) {
     Sband_Housekeeping S_band_hk;           // S-band housekeeping struct
     Hyperion_HouseKeeping hyperion_hk;      // Hyperion housekeeping
     charon_housekeeping charon_hk;          // Charon housekeeping
-    DFGM_Housekeeping DFGM_hk; // DFGM housekeeping struct
+    DFGM_Housekeeping DFGM_hk;              // DFGM housekeeping struct
     ns_telemetry NS_hk;                     // Northern SPIRIT housekeeping
 } All_systems_housekeeping;
 
