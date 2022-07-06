@@ -210,7 +210,6 @@ void iris_i2c_test(void *pvParameters) {
     uint32_t flash_addr = FLASH_MEM_BASE_ADDR;
     uint8_t num_bytes = 0x10;
     uint8_t buffer[128];
-    const char * filepath = "/home/jenish/Downloads/sample.bin";
 
     FILE *fptr;
     fptr = fopen("/home/jenish/Desktop/ex2_Iris_MCU_Software/Debug/ex2_Iris_MCU_Software.bin", "rb");
@@ -224,6 +223,8 @@ void iris_i2c_test(void *pvParameters) {
 
     for (;;) {
         iris_pre_sequence();
+        //iris_mass_erase_flash();
+        //iris_erase_page(0);
         for (int page = 0; page < num_pages; page++) {
             iris_erase_page(page);
             read_bin_file(fptr, buffer);
@@ -241,11 +242,11 @@ void iris_i2c_test(void *pvParameters) {
         //iris_check_bootloader_version();
         iris_go_to(flash_addr);
         iris_post_sequence();
-
+        //fclose(fptr);
 //        free(buffer);
         //gio_test();
     }
-    fclose(fptr);
+
 }
 
 
