@@ -73,7 +73,6 @@
 #include "iris_bootloader_cmds.h"
 #include "common.h"
 //#define CSP_USE_SDR
-#define CSP_USE_KISS
 #define SDR_TEST 0
 
 #if SDR_TEST == 1
@@ -189,9 +188,9 @@ void ex2_init(void *pvParameters) {
 
     init_software();
 
- #if SDR_TEST == 1
+#if SDR_TEST == 1
     start_test_sdr(test_uhf_ifdata, test_sband_ifdata);
- #endif
+#endif
 
 #if FLATSAT_TEST == 1
     /* Test Task */
@@ -223,8 +222,8 @@ void iris_i2c_test(void *pvParameters) {
 
     for (;;) {
         iris_pre_sequence();
-        //iris_mass_erase_flash();
-        //iris_erase_page(0);
+        // iris_mass_erase_flash();
+        // iris_erase_page(0);
         for (int page = 0; page < num_pages; page++) {
             iris_erase_page(page);
             read_bin_file(fptr, buffer);
@@ -236,29 +235,26 @@ void iris_i2c_test(void *pvParameters) {
 
         flash_addr = FLASH_MEM_BASE_ADDR;
 
-        //iris_write_page(flash_addr);
-        //iris_erase_page(0);
-        //iris_mass_erase_flash();
-        //iris_check_bootloader_version();
+        // iris_write_page(flash_addr);
+        // iris_erase_page(0);
+        // iris_mass_erase_flash();
+        // iris_check_bootloader_version();
         iris_go_to(flash_addr);
         iris_post_sequence();
-        //fclose(fptr);
-//        free(buffer);
-        //gio_test();
+        // fclose(fptr);
+        //        free(buffer);
+        // gio_test();
     }
-
 }
-
 
 int ex2_main(void) {
     _enable_IRQ_interrupt_(); // enable inturrupts
     InitIO();
     for (int i = 0; i < 1000000; i++)
         ;
-    //xTaskCreate(ex2_init, "init", INIT_STACK_SIZE, NULL, INIT_PRIO, NULL);
-//    xTaskCreate(iris_i2c_test, "iris_test", INIT_STACK_SIZE, NULL, INIT_PRIO, NULL);
-    xTaskCreate(iris_i2c_test, "IRIS I2C", 3000, NULL, (tskIDLE_PRIORITY + 1),
-                    NULL);
+    // xTaskCreate(ex2_init, "init", INIT_STACK_SIZE, NULL, INIT_PRIO, NULL);
+    //    xTaskCreate(iris_i2c_test, "iris_test", INIT_STACK_SIZE, NULL, INIT_PRIO, NULL);
+    xTaskCreate(iris_i2c_test, "IRIS I2C", 3000, NULL, (tskIDLE_PRIORITY + 1), NULL);
 
     /* Start FreeRTOS! */
     vTaskStartScheduler();
@@ -266,8 +262,6 @@ int ex2_main(void) {
     for (;;)
         ; // Scheduler didn't start
 }
-
-
 
 /**
  * Initialize service and system tasks
@@ -415,7 +409,8 @@ static inline SAT_returnState init_csp_interface() {
 
     if (SDR_NO_CSP) {
         sdr_interface_data_t *ifdata = sdr_interface_init(&sdr_conf, gs_if_name);
-        if (!ifdata) return SATR_ERROR;
+        if (!ifdata)
+            return SATR_ERROR;
 #if SDR_TEST == 1
         test_uhf_ifdata = ifdata;
 #endif
@@ -437,7 +432,8 @@ static inline SAT_returnState init_csp_interface() {
 
 #if SDR_TEST == 1
     test_sband_ifdata = sdr_interface_init(&sdr_conf, SDR_IF_SBAND_NAME);
-    if (!test_sband_ifdata) return SATR_ERROR;
+    if (!test_sband_ifdata)
+        return SATR_ERROR;
 #endif
 #endif /* CSP_USE_SDR */
 
