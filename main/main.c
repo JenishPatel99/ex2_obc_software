@@ -228,7 +228,6 @@ void iris_i2c_test(void *pvParameters) {
             iris_erase_page(page);
             read_bin_file(fptr, buffer);
             iris_write_page(flash_addr, buffer);
-            memset(buffer, 0, FLASH_MEM_PAGE_SIZE);
 
             flash_addr += FLASH_MEM_PAGE_SIZE;
         }

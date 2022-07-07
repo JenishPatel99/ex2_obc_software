@@ -23,6 +23,7 @@
 #include "i2c_io.h"
 #include "HL_gio.h"
 #include "HL_reg_het.h"
+#include "HL_reg_gio.h"
 #include "iris_i2c.h"
 #include "FreeRTOS.h"
 #include <string.h>
@@ -52,25 +53,49 @@ void iris_i2c_init() {
  * @brief
  *  Pull boot line low
  **/
-void BOOT_HIGH() { gioSetBit(hetPORT1, 20, 0); }
+void BOOT_HIGH() {
+#if IS_ATHENA == 1
+    gioSetBit(hetPORT1, 20, 1);
+#else
+    gioSetBit(hetPORT1, 12, 1);
+#endif
+}
 
 /**
  * @brief
  *  Pull boot line low
  **/
-void BOOT_LOW() { gioSetBit(hetPORT1, 20, 0); }
+void BOOT_LOW() {
+#if IS_ATHENA == 1
+    gioSetBit(hetPORT1, 20, 0);
+#else
+    gioSetBit(hetPORT1, 12, 0);
+#endif
+}
 
 /**
  * @brief
  *  Pull power line low
  **/
-void POWER_OFF() { gioSetBit(hetPORT1, 0, 0); }
+void POWER_OFF() {
+#if IS_ATHENA == 1
+    gioSetBit(gioPORTB, 0, 0);
+#else
+    gioSetBit(hetPORT1, 8, 0);
+#endif
+}
 
 /**
  * @brief
  *  Pull power line high
  **/
-void POWER_ON() { gioSetBit(hetPORT1, 0, 1); }
+void POWER_ON() {
+#if IS_ATHENA == 1
+    gioSetBit(gioPORTB, 0, 1);
+#else
+    gioSetBit(hetPORT1, 8, 1);
+#endif
+}
 
 /**
  * @brief
