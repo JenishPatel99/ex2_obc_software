@@ -44,6 +44,7 @@
 #define NS_TELEMETRY_COLLECTION_DELAY pdMS_TO_TICKS(15000)
 #define NS_GETFLAG_DELAY pdMS_TO_TICKS(2000)
 #define NS_GETFILENAME_DELAY pdMS_TO_TICKS(2000)
+#define NS_TRIMLOGFILE_DELAY pdMS_TO_TICKS(4000)
 #define NS_CONFIRM_DOWNLINK_DELAY pdMS_TO_TICKS(1000)
 #define NS_COMMAND_MUTEX_TIMEOUT pdMS_TO_TICKS(1000)
 
@@ -85,6 +86,7 @@ NS_return NS_confirm_downlink(uint8_t *conf);
 NS_return NS_get_heartbeat(uint8_t *heartbeat);
 NS_return NS_get_flag(char flag, bool *stat);
 NS_return NS_get_filename(char subcode, char *filename);
+NS_return NS_trim_log_file(void);
 NS_return NS_get_log_file(void);
 NS_return NS_get_telemetry(ns_telemetry *telemetry);
 NS_return NS_get_software_version(uint8_t *version);

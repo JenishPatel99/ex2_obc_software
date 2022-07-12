@@ -371,6 +371,34 @@ NS_return NS_get_filename(char subcode, char *filename) {
     xSemaphoreGive(ns_command_mutex);
     return return_val;
 }
+/**
+ * @brief
+ *      Erases the log file so that it can stay at a manageable size
+ * @return
+ *      NS_return
+ */
+
+NS_return NS_trim_log_file(){
+    if (xSemaphoreTake(ns_command_mutex, NS_COMMAND_MUTEX_TIMEOUT) != pdTRUE) {
+            return NS_HANDLER_BUSY;
+        }
+        uint8_t command[NS_SUBCODED_CMD_LEN] = {'l', 'l', 'l', 'i', 'i', 'i'};
+        uint8_t answer[NS_STANDARD_ANS_LEN];
+
+        NS_return return_val = NS_sendAndReceive(command, NS_SUBCODED_CMD_LEN, answer, NS_STANDARD_ANS_LEN);
+
+        if(return_val != NS_OK){
+            xSemaphoreGive(ns_command_mutex);
+            return return_val;
+        }
+
+        vTaskDelay(NS_TRIMLOGFILE_DELAY);
+
+        uint8_t final_ack[NS_STANDARD_ANS_LEN];
+        return_val = NS_expectResponse(final_ack, NS_STANDARD_ANS_LEN);
+        xSemaphoreGive(ns_command_mutex);
+        return return_val;
+}
 
 /**
  * @brief
