@@ -31,7 +31,12 @@ static SemaphoreHandle_t ns_command_mutex;
 static void convert_bytes_to_int16(int16_t *dest, uint8_t little_byte, uint8_t big_byte);
 static NS_return NS_receive_file(uint32_t *file_size, bool log_file);
 
-// Functions fulfilling functionality common to AuroraSat and YukonSat
+/**
+ * @brief
+ *      Initialize Northern SPIRIT payload handler code
+ * @return
+ *      NS_return
+ */
 
 NS_return NS_handler_init() {
     ns_command_mutex = xSemaphoreCreateMutex();
@@ -43,6 +48,17 @@ NS_return NS_handler_init() {
     }
     return NS_OK;
 }
+
+/**
+ * @brief
+ *      Upload artwork from the OBC to the northern spirit payload
+ * @param filename
+ *      name of the file on the OBC to upload
+ *      Note: For consistency with the payload, filenames should be 11 bytes long, ex. "ARTXXXX.BMP"
+ * @return
+ *      NS_return
+ */
+
 
 NS_return NS_upload_artwork(char *filename) {
     if (xSemaphoreTake(ns_command_mutex, NS_COMMAND_MUTEX_TIMEOUT) != pdTRUE) {
@@ -90,6 +106,13 @@ NS_return NS_upload_artwork(char *filename) {
     return return_val;
 }
 
+/**
+ * @brief
+ *      Tell the northern spirit payload to display artwork and capture an image
+ * @return
+ *      NS_return
+ */
+
 NS_return NS_capture_image(void) {
     if (xSemaphoreTake(ns_command_mutex, NS_COMMAND_MUTEX_TIMEOUT) != pdTRUE) {
         return NS_HANDLER_BUSY;
@@ -120,9 +143,26 @@ NS_return NS_capture_image(void) {
     return return_val;
 }
 
+/**
+ * @brief
+ *      Get the oldest existing image file from the payload to the OBC
+ * @return
+ *      NS_return
+ */
+
 NS_return NS_get_image_file(uint32_t *image_size){
     return NS_receive_file(image_size, false);
 }
+
+/**
+ * @brief
+ *      Internal function fulfilling file transfer for images and log files
+ * @param file_size
+ *      Returns size of file that was requested
+ * @return
+ *      NS_return
+ */
+
 
 static NS_return NS_receive_file(uint32_t *file_size, bool log_file){
     uint8_t command[NS_STANDARD_CMD_LEN + NS_STANDARD_CMD_LEN] = {'f', 'f', 'f'};
@@ -192,6 +232,19 @@ static NS_return NS_receive_file(uint32_t *file_size, bool log_file){
     return return_val;
 }
 
+/**
+ * @brief
+ *      Let the northern spirit payload know that the OBC received its image
+ *      Note: Payload deletes image from its SD card
+ * @detail
+ *      Repeat calls will erase successive images
+ * @param conf
+ *      Confirmation from the payload that image was erased
+ * @return
+ *      NS_return
+ */
+
+
 NS_return NS_confirm_downlink(uint8_t *conf) {
     if (xSemaphoreTake(ns_command_mutex, NS_COMMAND_MUTEX_TIMEOUT) != pdTRUE) {
         return NS_HANDLER_BUSY;
@@ -217,6 +270,13 @@ NS_return NS_confirm_downlink(uint8_t *conf) {
     return return_val;
 }
 
+/**
+ * @brief
+ *      Get 'heartbeat' of the payload (aka a ping)
+ * @return
+ *      NS_return
+ */
+
 NS_return NS_get_heartbeat(uint8_t *heartbeat) {
     if (xSemaphoreTake(ns_command_mutex, NS_COMMAND_MUTEX_TIMEOUT) != pdTRUE) {
         return NS_HANDLER_BUSY;
@@ -230,6 +290,18 @@ NS_return NS_get_heartbeat(uint8_t *heartbeat) {
     xSemaphoreGive(ns_command_mutex);
     return return_val;
 }
+
+/**
+ * @brief
+ *      Get an error code flag from the payload
+ * @param flag
+ *      Lower-case ascii char corresponding to desired flag
+ * @param stat
+ *      Status of requested flag
+ * @return
+ *      NS_return
+ */
+
 
 NS_return NS_get_flag(char flag, bool *stat) {
     if (xSemaphoreTake(ns_command_mutex, NS_COMMAND_MUTEX_TIMEOUT) != pdTRUE) {
@@ -258,6 +330,21 @@ NS_return NS_get_flag(char flag, bool *stat) {
     return return_val;
 }
 
+/**
+ * @brief
+ *      Gets the next filename of specified type
+ * @param subcode
+ *      File type specifier:
+ *      - 'a' for next piece of loaded artwork
+ *      - 'b' for next available name for artwork on payload
+ *      - 'c' for next loaded image
+ *      - 'd' for next available name for image on payload
+ * @param filename
+ *      next filename of specified type
+ * @return
+ *      NS_return
+ */
+
 NS_return NS_get_filename(char subcode, char *filename) {
     if (xSemaphoreTake(ns_command_mutex, NS_COMMAND_MUTEX_TIMEOUT) != pdTRUE) {
         return NS_HANDLER_BUSY;
@@ -285,9 +372,29 @@ NS_return NS_get_filename(char subcode, char *filename) {
     return return_val;
 }
 
+/**
+ * @brief
+ *      Get the log file from the northern spirit payload
+ * @param log_size
+ *      Size of the log file that is read
+ * @return
+ *      NS_return
+ */
+
+
 NS_return NS_get_payload_log_file(uint32_t *log_size){
     return NS_receive_file(log_size, true);
 }
+
+/**
+ * @brief
+ *      Get the telemetry data from the northern spirit payload
+ * @param telemetry
+ *      Stores decoded telemetry values
+ * @return
+ *      NS_return
+ */
+
 
 NS_return NS_get_telemetry(ns_telemetry *telemetry) {
     if (xSemaphoreTake(ns_command_mutex, NS_COMMAND_MUTEX_TIMEOUT) != pdTRUE) {
@@ -338,6 +445,16 @@ NS_return NS_get_telemetry(ns_telemetry *telemetry) {
     return return_val;
 }
 
+/**
+ * @brief
+ *      Get the git hash of the software version on the payload
+ * @param version
+ *      version of payload firmware
+ * @return
+ *      NS_return
+ */
+
+
 NS_return NS_get_software_version(uint8_t *version) {
     if (xSemaphoreTake(ns_command_mutex, NS_COMMAND_MUTEX_TIMEOUT) != pdTRUE) {
         return NS_HANDLER_BUSY;
@@ -352,6 +469,13 @@ NS_return NS_get_software_version(uint8_t *version) {
     xSemaphoreGive(ns_command_mutex);
     return return_val;
 }
+
+/**
+ * @brief
+ *      Internal function to concatenate two bytes to form a signed integer
+ * @return
+ *      NS_return
+ */
 
 static void convert_bytes_to_int16(int16_t *dest, uint8_t little_byte, uint8_t big_byte) {
     uint16_t temp = (big_byte << 8) | little_byte;
