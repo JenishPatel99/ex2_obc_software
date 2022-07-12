@@ -38,6 +38,7 @@
 #define NS_ENCODED_TELEMETRY_DATA_LEN 64
 #define NS_DECODED_TELEMETRY_DATA_LEN 48
 #define NS_SWVERSION_DATA_LEN 7
+#define NS_IMG_SZ_ARR_LEN 6
 
 #define NS_IMAGE_COLLECTION_DELAY pdMS_TO_TICKS(10000)
 #define NS_TELEMETRY_COLLECTION_DELAY pdMS_TO_TICKS(15000)
@@ -84,6 +85,7 @@ NS_return NS_confirm_downlink(uint8_t *conf);
 NS_return NS_get_heartbeat(uint8_t *heartbeat);
 NS_return NS_get_flag(char flag, bool *stat);
 NS_return NS_get_filename(char subcode, char *filename);
+NS_return NS_get_log_file(void);
 NS_return NS_get_telemetry(ns_telemetry *telemetry);
 NS_return NS_get_software_version(uint8_t *version);
 

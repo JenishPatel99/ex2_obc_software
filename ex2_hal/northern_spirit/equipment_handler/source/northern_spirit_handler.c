@@ -24,10 +24,12 @@
 #include "xmodem.h"
 #include <redposix.h>
 #include <os_semphr.h>
+#include <string.h>
 
 static SemaphoreHandle_t ns_command_mutex;
 
 static void convert_bytes_to_int16(int16_t *dest, uint8_t little_byte, uint8_t big_byte);
+static NS_return NS_receive_file(uint32_t *file_size, bool log_file);
 
 // Functions fulfilling functionality common to AuroraSat and YukonSat
 
@@ -118,6 +120,78 @@ NS_return NS_capture_image(void) {
     return return_val;
 }
 
+NS_return NS_get_image_file(uint32_t *image_size){
+    return NS_receive_file(image_size, false);
+}
+
+static NS_return NS_receive_file(uint32_t *file_size, bool log_file){
+    uint8_t command[NS_STANDARD_CMD_LEN + NS_STANDARD_CMD_LEN] = {'f', 'f', 'f'};
+    uint8_t standard_answer[NS_STANDARD_ANS_LEN + NS_STANDARD_ANS_LEN];
+    char filename[NS_FILENAME_DATA_LEN];
+    NS_return return_val;
+
+    if(log_file){
+        // Receiving the log file.
+        memcpy(command, "lllggg", 6);
+        char log_name[] = "ns_payload_log.txt";
+        memcpy(filename, log_name, sizeof(log_name));
+
+        // Initiate image transfer and receive first two acks
+        return_val = NS_sendAndReceive(command, NS_STANDARD_CMD_LEN, standard_answer,
+                                                 NS_STANDARD_ANS_LEN + NS_STANDARD_ANS_LEN);
+    }else{
+        // Receiving an image file. Check it exists.
+        return_val = NS_get_filename('c', filename);
+        if (return_val != NS_OK) {
+            xSemaphoreGive(ns_command_mutex);
+            return return_val;
+        }
+
+        // Initiate image transfer and receive first two acks
+        return_val = NS_sendAndReceive(command, NS_STANDARD_CMD_LEN, standard_answer,
+                                                 NS_STANDARD_ANS_LEN + NS_STANDARD_ANS_LEN);
+    }
+
+    if (return_val != NS_OK) {
+        xSemaphoreGive(ns_command_mutex);
+        return return_val;
+    }
+
+    // Receive file size parameter
+    char file_len_arr[NS_IMG_SZ_ARR_LEN];
+    return_val = NS_expectResponse((uint8_t *)file_len_arr, NS_IMG_SZ_ARR_LEN);
+
+    size_t decoded_len;
+    unsigned char *file_len_arr_decoded = base64_decode(file_len_arr, NS_IMG_SZ_ARR_LEN, &decoded_len);
+    memcpy(file_size, file_len_arr_decoded, decoded_len);
+
+    // Open/create file on the OBC
+    int32_t file = red_open(filename, RED_O_WRONLY | RED_O_CREAT);
+    if(file == -1){
+        sys_log(ERROR, "Unexpected error %d from red_open file name %s in NS_receive_image\r\n", red_errno, filename);
+        xSemaphoreGive(ns_command_mutex);
+        return NS_FAIL;
+    }
+
+    // xmodem receive
+    // TODO: Make receive use a file to write data instead of a buffer
+    char buf[128];
+    xmodemReceive(buf, 128);
+
+    red_close(file);
+
+    // Receive final ack
+    uint8_t final_ack[NS_STANDARD_ANS_LEN];
+    return_val = NS_expectResponse(final_ack, NS_STANDARD_ANS_LEN);
+    if (return_val != NS_OK) {
+        xSemaphoreGive(ns_command_mutex);
+        return return_val;
+    }
+
+    xSemaphoreGive(ns_command_mutex);
+    return return_val;
+}
+
 NS_return NS_confirm_downlink(uint8_t *conf) {
     if (xSemaphoreTake(ns_command_mutex, NS_COMMAND_MUTEX_TIMEOUT) != pdTRUE) {
         return NS_HANDLER_BUSY;
@@ -194,6 +268,7 @@ NS_return NS_get_filename(char subcode, char *filename) {
 
     NS_return return_val =
         NS_sendAndReceive(command, NS_STANDARD_CMD_LEN + NS_STANDARD_CMD_LEN, answer, NS_STANDARD_ANS_LEN);
+    // TODO: Add check for error codes, don't just rely on received length of data
     if (return_val != NS_OK) {
         xSemaphoreGive(ns_command_mutex);
         return return_val;
@@ -208,6 +283,10 @@ NS_return NS_get_filename(char subcode, char *filename) {
     memcpy(filename, filename_ans, 11);
     xSemaphoreGive(ns_command_mutex);
     return return_val;
+}
+
+NS_return NS_get_payload_log_file(uint32_t *log_size){
+    return NS_receive_file(log_size, true);
 }
 
 NS_return NS_get_telemetry(ns_telemetry *telemetry) {
