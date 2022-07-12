@@ -23,9 +23,9 @@
 
 static void northern_voices_task(void *pvParameters);
 
-bool northern_voices_active = false;
+static bool northern_voices_active = false;
 
-NS_return NS_start_northern_voices(char *filename) {
+NS_return NVM_start_northern_voices(char *filename) {
     if (northern_voices_active == true) {
         sys_log(NOTICE, "Tried to start northern voices when it was already active");
         return NS_FAIL;
@@ -40,9 +40,9 @@ NS_return NS_start_northern_voices(char *filename) {
     return NS_OK;
 }
 
-void NS_stop_northern_voices(void) { northern_voices_active = false; }
+void NVM_stop_northern_voices(void) { northern_voices_active = false; }
 
-bool NS_northern_voices_status(void) { return northern_voices_active; }
+bool NVM_northern_voices_status(void) { return northern_voices_active; }
 
 static void northern_voices_task(void *pvParameters) {
     char *filename = (char *)pvParameters;
@@ -54,6 +54,12 @@ static void northern_voices_task(void *pvParameters) {
         vTaskDelete(NULL);
     }
     while (northern_voices_active) {
+        // Main loop for the northern voices mission
+
+        // Check power state and discontinue if there are insufficient resources to continue this use of the UHF
+
+        // TODO: Continuously read from file, encode (CODEC) and transmit via UHF PIPE directly
+
     }
     vTaskDelete(NULL);
 }

@@ -207,6 +207,31 @@ SAT_returnState ns_payload_service_app(csp_packet_t *packet) {
         break;
     }
 
+    case NVM_START: {
+        char filename[30];
+        memcpy(filename, &packet->data[IN_DATA_BYTE], 30);
+        status = HAL_NVM_start_nvm(filename);
+        memcpy(&packet->data[STATUS_BYTE], &status, sizeof(int8_t));
+        set_packet_length(packet, sizeof(int8_t) + 1);
+        break;
+    }
+
+    case NVM_STOP: {
+        status = HAL_NVM_stop_nvm();
+        memcpy(&packet->data[STATUS_BYTE], &status, sizeof(int8_t));
+        set_packet_length(packet, sizeof(int8_t) + 1);
+        break;
+    }
+
+    case NVM_GET_STATUS: {
+        bool nvm_stat;
+        status = HAL_NVM_get_status(&nvm_stat);
+        memcpy(&packet->data[STATUS_BYTE], &status, sizeof(int8_t));
+        memcpy(&packet->data[OUT_DATA_BYTE], &nvm_stat, sizeof(bool));
+        set_packet_length(packet, sizeof(int8_t) + sizeof(bool) + 1);
+        break;
+    }
+
     default:
         ex2_log("No such subservice!\n");
         return_state = SATR_PKT_ILLEGAL_SUBSERVICE;

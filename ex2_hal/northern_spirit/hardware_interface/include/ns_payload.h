@@ -35,4 +35,8 @@ NS_return HAL_NS_get_log_file(uint32_t *log_size);
 NS_return HAL_NS_get_telemetry(ns_telemetry *tlm);
 NS_return HAL_NS_get_software_version(uint8_t *version);
 
+NS_return HAL_NVM_start_nvm(char *filename);
+NS_return HAL_NVM_stop_nvm(void);
+NS_return HAL_NVM_get_status(bool *stat);
+
 #endif /* EX2_HAL_NORTHERN_SPIRIT_HARDWARE_INTERFACE_INCLUDE_NS_PAYLOAD_H_ */

@@ -25,8 +25,8 @@
 #define NORTHERN_VOICES_STACK_SIZE 500
 #define NORTHERN_VOICES_PRIORITY 3
 
-NS_return NS_start_northern_voices(char *filename);
-void NS_stop_northern_voices(void);
-bool NS_northern_voices_status(void);
+NS_return NVM_start_northern_voices(char *filename);
+void NVM_stop_northern_voices(void);
+bool NVM_northern_voices_status(void);
 
 #endif /* EX2_HAL_NORTHERN_SPIRIT_EQUIPMENT_HANDLER_INCLUDE_NORTHERN_VOICES_GAMES_H_ */

@@ -41,7 +41,12 @@ typedef enum {
     NS_TRIM_LOG_FILE,
     NS_GET_LOG_FILE,
     NS_GET_TELEMETRY,
-    NS_GET_SW_VERSION
+    NS_GET_SW_VERSION,
+
+    // Northern Voices Mission
+    NVM_START,
+    NVM_STOP,
+    NVM_GET_STATUS
 } ns_payload_service_subtype;
 
 void ns_payload_service(void *param);

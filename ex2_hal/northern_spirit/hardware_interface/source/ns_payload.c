@@ -107,3 +107,30 @@ NS_return HAL_NS_get_software_version(uint8_t *version) {
     return NS_IS_STUBBED;
 #endif
 }
+
+NS_return HAL_NVM_start_nvm(char *filename) {
+#if UHF_IS_STUBBED == 0
+    return NVM_start_northern_voices(filename);
+#else
+    return NS_IS_STUBBED;
+#endif
+}
+
+NS_return HAL_NVM_stop_nvm() {
+#if UHF_IS_STUBBED == 0
+    NVM_stop_northern_voices();
+    return NS_OK;
+#else
+    return NS_IS_STUBBED;
+#endif
+}
+
+NS_return HAL_NVM_get_status(bool *stat){
+#if UHF_IS_STUBBED == 0
+    *stat = NVM_northern_voices_status();
+    return NS_OK;
+#else
+    return NS_IS_STUBBED;
+#endif
+}
+
