@@ -33,10 +33,13 @@
 typedef enum {
     NS_UPLOAD_ARTWORK,
     NS_CAPTURE_IMAGE,
+    NS_GET_IMAGE,
     NS_CONFIRM_DOWNLINK,
     NS_GET_HEARTBEAT,
     NS_GET_FLAG,
     NS_GET_FILENAME,
+    NS_TRIM_LOG_FILE,
+    NS_GET_LOG_FILE,
     NS_GET_TELEMETRY,
     NS_GET_SW_VERSION
 } ns_payload_service_subtype;

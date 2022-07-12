@@ -25,10 +25,13 @@
 
 NS_return HAL_NS_upload_artwork(char *filename);
 NS_return HAL_NS_capture_image(void);
+NS_return HAL_NS_get_image_file(uint32_t *img_size);
 NS_return HAL_NS_confirm_downlink(uint8_t *conf);
 NS_return HAL_NS_get_heartbeat(uint8_t *heartbeat);
 NS_return HAL_NS_get_flag(char flag, bool *stat);
 NS_return HAL_NS_get_filename(char subcode, char *filename);
+NS_return HAL_NS_trim_log_file(void);
+NS_return HAL_NS_get_log_file(uint32_t *log_size);
 NS_return HAL_NS_get_telemetry(ns_telemetry *tlm);
 NS_return HAL_NS_get_software_version(uint8_t *version);
 

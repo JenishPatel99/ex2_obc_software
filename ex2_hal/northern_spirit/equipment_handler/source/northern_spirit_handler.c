@@ -410,7 +410,7 @@ NS_return NS_trim_log_file(){
  */
 
 
-NS_return NS_get_payload_log_file(uint32_t *log_size){
+NS_return NS_get_log_file(uint32_t *log_size){
     return NS_receive_file(log_size, true);
 }
 

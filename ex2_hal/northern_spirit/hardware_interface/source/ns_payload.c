@@ -36,6 +36,14 @@ NS_return HAL_NS_capture_image() {
 #endif
 }
 
+NS_return HAL_NS_get_image_file(uint32_t *img_size){
+#if PAYLOAD_IS_STUBBED == 0
+    return NS_get_image_file(img_size);
+#else
+    return NS_IS_STUBBED;
+#endif
+}
+
 NS_return HAL_NS_confirm_downlink(uint8_t *conf) {
 #if PAYLOAD_IS_STUBBED == 0
     return NS_confirm_downlink(conf);
@@ -63,6 +71,22 @@ NS_return HAL_NS_get_flag(char flag, bool *stat) {
 NS_return HAL_NS_get_filename(char subcode, char *filename) {
 #if PAYLOAD_IS_STUBBED == 0
     return NS_get_filename(subcode, filename);
+#else
+    return NS_IS_STUBBED;
+#endif
+}
+
+NS_return HAL_NS_trim_log_file(){
+#if PAYLOAD_IS_STUBBED == 0
+    return NS_trim_log_file();
+#else
+    return NS_IS_STUBBED;
+#endif
+}
+
+NS_return HAL_NS_get_log_file(uint32_t *log_size){
+#if PAYLOAD_IS_STUBBED == 0
+    return NS_get_log_file(log_size);
 #else
     return NS_IS_STUBBED;
 #endif

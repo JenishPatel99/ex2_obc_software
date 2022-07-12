@@ -125,6 +125,14 @@ SAT_returnState ns_payload_service_app(csp_packet_t *packet) {
         set_packet_length(packet, sizeof(int8_t) + 1);
         break;
     }
+    case NS_GET_IMAGE: {
+        uint32_t img_size;
+        status = HAL_NS_get_image_file(&img_size);
+        memcpy(&packet->data[STATUS_BYTE], &status, sizeof(int8_t));
+        memcpy(&packet->data[OUT_DATA_BYTE], &img_size, sizeof(img_size));
+        set_packet_length(packet, sizeof(int8_t) +sizeof(img_size) + 1);
+        break;
+    }
     case NS_CONFIRM_DOWNLINK: {
         uint8_t conf;
         status = HAL_NS_confirm_downlink(&conf);
@@ -162,6 +170,22 @@ SAT_returnState ns_payload_service_app(csp_packet_t *packet) {
         memcpy(&packet->data[STATUS_BYTE], &status, sizeof(int8_t));
         memcpy(&packet->data[OUT_DATA_BYTE], filename, 11);
         set_packet_length(packet, sizeof(int8_t) + 11 + 1);
+        break;
+    }
+
+    case NS_TRIM_LOG_FILE: {
+        status = HAL_NS_trim_log_file();
+        memcpy(&packet->data[STATUS_BYTE], &status, sizeof(int8_t));
+        set_packet_length(packet, sizeof(int8_t) + 1);
+        break;
+    }
+
+    case NS_GET_LOG_FILE: {
+        uint32_t log_size;
+        status = HAL_NS_get_log_file(&log_size);
+        memcpy(&packet->data[STATUS_BYTE], &status, sizeof(int8_t));
+        memcpy(&packet->data[OUT_DATA_BYTE], &log_size, sizeof(log_size));
+        set_packet_length(packet, sizeof(int8_t) + sizeof(log_size) + 1);
         break;
     }
 
