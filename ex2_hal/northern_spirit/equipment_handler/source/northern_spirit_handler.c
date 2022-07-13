@@ -69,6 +69,25 @@ NS_return NS_upload_artwork(char *filename) {
 
     strcat(filename, ".bmp");
 
+    // Change into northern spirit directory
+    uint8_t directory_attempts = 3;
+    while(directory_attempts--){
+        int32_t iErr = red_chdir("VOL0:/northern_spirit");
+        if(iErr == -1){
+            sys_log(ERROR, "Error %d trying to enter northern spirit directory\r\n", red_errno);
+            if(!directory_attempts){
+                vTaskDelete(NULL);
+                xSemaphoreGive(ns_command_mutex);
+                return NS_FAIL;
+            }
+
+            // Retry in 10 seconds
+            vTaskDelay(10 * ONE_SECOND);
+            continue;
+        }
+        break;
+    }
+
     // Open specified file
     int32_t file1 = red_open(filename, RED_O_RDONLY);
     if (file1 == -1) {
@@ -165,11 +184,34 @@ NS_return NS_get_image_file(uint32_t *image_size){
 
 
 static NS_return NS_receive_file(uint32_t *file_size, bool log_file){
+    if (xSemaphoreTake(ns_command_mutex, NS_COMMAND_MUTEX_TIMEOUT) != pdTRUE) {
+        return NS_HANDLER_BUSY;
+    }
     uint8_t command[NS_STANDARD_CMD_LEN + NS_STANDARD_CMD_LEN] = {'f', 'f', 'f'};
     uint8_t standard_answer[NS_STANDARD_ANS_LEN + NS_STANDARD_ANS_LEN];
     char filename[NS_FILENAME_DATA_LEN];
     NS_return return_val;
 
+    // Change into northern spirit directory
+    uint8_t directory_attempts = 3;
+    while(directory_attempts--){
+        int32_t iErr = red_chdir("VOL0:/northern_spirit");
+        if(iErr == -1){
+            sys_log(ERROR, "Error %d trying to enter northern spirit directory\r\n", red_errno);
+            if(!directory_attempts){
+                vTaskDelete(NULL);
+                xSemaphoreGive(ns_command_mutex);
+                return NS_FAIL;
+            }
+
+            // Retry in 10 seconds
+            vTaskDelay(10 * ONE_SECOND);
+            continue;
+        }
+        break;
+    }
+
+    // Format and send command
     if(log_file){
         // Receiving the log file.
         memcpy(command, "lllggg", 6);

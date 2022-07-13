@@ -46,15 +46,36 @@ bool NVM_northern_voices_status(void) { return northern_voices_active; }
 
 static void northern_voices_task(void *pvParameters) {
     char *filename = (char *)pvParameters;
+    uint8_t directory_attempts = 3;
     int32_t iErr;
+
+    // Change into northern spirit directory
+    while(directory_attempts--){
+        iErr = red_chdir("VOL0:/northern_spirit");
+        if(iErr == -1){
+            sys_log(ERROR, "Error %d trying to enter northern spirit directory\r\n", red_errno);
+            if(!directory_attempts){
+                northern_voices_active = false;
+                vTaskDelete(NULL);
+            }
+
+            // Retry in 10 seconds
+            vTaskDelay(10 * ONE_SECOND);
+            continue;
+        }
+        break;
+    }
+
+    // Open file
     iErr = red_open(filename, RED_O_RDONLY);
     if (iErr == -1) {
-        sys_log(ERROR, "Failed to open file for northern voices");
+        sys_log(ERROR, "Error %d trying to open file %s for northern voices", red_errno, filename);
         northern_voices_active = false;
         vTaskDelete(NULL);
     }
+
+    // Main loop for the northern voices mission
     while (northern_voices_active) {
-        // Main loop for the northern voices mission
 
         // Check power state and discontinue if there are insufficient resources to continue this use of the UHF
 

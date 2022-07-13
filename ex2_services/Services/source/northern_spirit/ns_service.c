@@ -18,6 +18,7 @@
  */
 #include "northern_spirit/ns_service.h"
 #include "task_manager/task_manager.h"
+#include "redposix.h"
 
 static uint32_t svc_wdt_counter = 0;
 static uint32_t get_svc_wdt_counter() { return svc_wdt_counter; }
@@ -89,6 +90,12 @@ SAT_returnState start_ns_payload_service(void) {
     }
     ex2_register(svc_tsk, svc_funcs);
     sys_log(INFO, "ns payload service started\n");
+
+    int32_t iErr = red_mkdir("VOL0:/northern_spirit");
+    if (iErr == -1) {
+        sys_log(ERROR, "Error %d creating the northern spirit directory", red_errno);
+        return SATR_ERROR;
+    }
     return SATR_OK;
 }
 
