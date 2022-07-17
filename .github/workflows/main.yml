@@ -19,13 +19,17 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         submodules: true
+
+    - name: Create version.sh
+      run: |
+        ./version.sh
     
     - name: Git Sumbodule Update
       run: |
-        git submodule sync
         git submodule init
-        git pull --recurse-submodules
-        git submodule update --remote --recursive
+        git submodule update
+        git submodule foreach 'git checkout master || :'
+        git submodule foreach git pull
     
     - name: Build ccs project
       uses: JenishPatel99/ccsv10-build-action@v3.15
