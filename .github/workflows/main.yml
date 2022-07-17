@@ -3,13 +3,29 @@ name: CI build
 on: [push, pull_request]
 
 jobs:
-  ci_build_job:
+  sync:
+    name: 'CCS Build'
     runs-on: ubuntu-latest
-    name: Git Sumbodule Update
+
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+    
+    steps:
+      # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        token: ${{ secrets.CI_TOKEN }}
+        submodules: true
+    
+    - name: Git Sumbodule Update
       run: |
         git pull --recurse-submodules
         git submodule update --remote --recursive
-    name: Build ccs project
-    steps:
-        - uses: actions/checkout@v2
-        - uses: JenishPatel99/ccsv10-build-action@v3.15
+    
+    - name: Build ccs project
+      steps:
+          - uses: actions/checkout@v2
+          - uses: JenishPatel99/ccsv10-build-action@v3.15
