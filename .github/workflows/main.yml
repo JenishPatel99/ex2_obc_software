@@ -26,6 +26,4 @@ jobs:
         git submodule update --remote --recursive
     
     - name: Build ccs project
-      steps:
-          - uses: actions/checkout@v2
-          - uses: JenishPatel99/ccsv10-build-action@v3.15
+      uses: JenishPatel99/ccsv10-build-action@v3.15
