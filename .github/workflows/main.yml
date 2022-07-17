@@ -5,6 +5,13 @@ on: [push, pull_request]
 jobs:
   ci_build_job:
     runs-on: ubuntu-latest
+    name: Create version.sh
+      run: |
+        ./version
+    name: Git Sumbodule Update
+      run: |
+        git pull --recurse-submodules
+        git submodule update --remote --recursive
     name: Build ccs project
     steps:
         - uses: actions/checkout@v2
