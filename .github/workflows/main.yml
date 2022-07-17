@@ -6,7 +6,8 @@ jobs:
   ci_build_job:
     runs-on: ubuntu-latest
     name: Create version.sh
-      run: ./version.sh
+      run: |
+        ./version.sh
     name: Git Sumbodule Update
       run: |
         git pull --recurse-submodules
