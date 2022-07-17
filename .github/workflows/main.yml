@@ -17,8 +17,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        token: ${{ secrets.PAT_TOKEN }}
+        token: |
+          ${{ secrets.GITHUB_TOKEN }} 
+          ${{ secrets.PAT_TOKEN }}
         submodules: true
 
     - name: Create version.sh
